@@ -55,5 +55,19 @@ func main() {
 	}
 	//lastInsertId2 :  0 -> cannot get since lastInserId not implemented in psql -> https://github.com/jmoiron/sqlx/issues/154
 	fmt.Println("lastInsertId3 : ", lastInsertId3)
+
+	// ================= 3) USING tx.ExecContext with RETURNING ID ======================= FAILED
+	result2, err := tx.ExecContext(ctx, `INSERT INTO users (name) VALUES ($1) RETURNING ID`, "user3")
+	if err != nil {
+		fmt.Println(err)
+		tx.Rollback()
+	}
+
+	lastInsertId4 , errGetLastID2 := result2.LastInsertId()
+	if errGetLastID2 != nil {
+		fmt.Println(err)
+	}
+	//lastInsertId3 :  0 -> cannot get since lastInserId not implemented in psql -> https://github.com/jmoiron/sqlx/issues/154
+	fmt.Println("lastInsertId4 : ", lastInsertId4)
 	tx.Commit()
 }
